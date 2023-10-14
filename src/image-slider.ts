@@ -1,7 +1,5 @@
 import LinkedList, { NodeItem } from "./handler/linked-list";
 
-import * as ChevronLeft from './my-chevron.svg';
-
 type Direction = {
     turn: 'turn-right' | 'turn-left',
     set: 'set-right' | 'set-left',
@@ -179,9 +177,17 @@ export default class ImageSlider<T> extends LinkedList<T> {
     public generateImage(direction: Direction): HTMLImageElement {
 
         const imgEl = document.createElement('img');
-        imgEl.setAttribute('src', this.node?.value!);
-        imgEl.setAttribute('data-id', this.node?.id!);
-        imgEl.classList.add(direction.set);
+        
+        if(this.node) {
+
+            const nodeValue = this.node?.value;
+            const nodeId = this.node.id;
+            
+            imgEl.setAttribute('src', `${nodeValue}`);
+            imgEl.setAttribute('data-id', `${nodeId}`);
+            imgEl.classList.add(direction.set);
+    
+        }
 
         return imgEl;
     }

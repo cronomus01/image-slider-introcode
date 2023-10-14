@@ -79,7 +79,7 @@ export default class LinkedList<T> {
 
     public append(item: T): NodeItem<T> | void {
         
-        const node: NodeItem<T> = {value: item, next: null, prev: null}
+        const node: NodeItem<T> = {id: this.length, value: item, next: null, prev: null}
 
 
 
@@ -131,7 +131,7 @@ export default class LinkedList<T> {
 
     public insertAt (item: T, index: number) {
 
-        const node: NodeItem<T> = {value: item, next: null}
+        const node: NodeItem<T> = {id: this.length, value: item, next: null, prev: null}
 
         if(this.empty()) this.head = node;
 
