@@ -19,4 +19,4 @@ jobs:
       - run: npm run build
       - run: npm publish
         env:
-          NPM_AUTH_TOKEN: ${{ secrets.image-slider-token }}
+          token: ${{ secrets.image-slider-token }}
