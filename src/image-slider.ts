@@ -82,6 +82,11 @@ export default class ImageSlider<T> extends LinkedList<T> {
 
     public async actions(app: HTMLElement): Promise<void>  {
         
+        const sliderContentEl = app.querySelector('.slider-content')!;        
+        const sliderContentChildrens = sliderContentEl.children;
+
+        sliderContentEl.setAttribute('style', `width: ${sliderContentChildrens.length * 100}%`)
+
         const next = app.querySelector<HTMLButtonElement>('.next')!;
         const previous = app.querySelector<HTMLButtonElement>('.previous')!;
 
@@ -127,6 +132,10 @@ export default class ImageSlider<T> extends LinkedList<T> {
         const paginationEl = app.querySelector('.pagination-ls')!;
         const paginateChildrens = paginationEl.children;
 
+
+        // this.sliderWith = Math.max(0, this.sliderWith + 21)
+
+
         if(last === null) {
             this.node = revert;
         } else {
@@ -155,24 +164,26 @@ export default class ImageSlider<T> extends LinkedList<T> {
                     if(direction.traverse == "right") {
                         this.sliderWith += sliderContent.offsetWidth;
                         
-                        if(this.sliderWith > sliderContentEl.offsetWidth - this.sliderWith + 1) {
+                        if(this.sliderWith == sliderContentEl.offsetWidth) {
                             this.sliderWith = 0;
                         }
+                        
+                     
                     }
 
+                    
                     if(direction.traverse == "left") {
-                        this.sliderWith -= sliderContent.offsetWidth
+                        this.sliderWith -= sliderContent.offsetWidth;
 
                         if(this.sliderWith < 0) {
-                            this.sliderWith = sliderContentEl.offsetWidth - sliderContent.offsetWidth - Math.abs(this.sliderWith);
+                            this.sliderWith = sliderContentEl.offsetWidth - sliderContent.offsetWidth;
                         }
                     }
 
-                    sliderContentEl.setAttribute('style', `transform: translate3d(-${this.sliderWith - 2}px, 0, 0`)
+                    sliderContentEl.setAttribute('style', `width: ${sliderContentChildrens.length * 100}%;transition: all 700ms ease 0s; transform: translate3d(-${this.sliderWith}px, 0, 0`)
 
-
-                    console.log(this.sliderWith);
-                    console.log(sliderContentEl.offsetWidth);
+                    console.log(`${this.sliderWith} ${sliderContentEl.offsetWidth}`);
+                    
 
                 } else {
                     child?.classList.remove('active');

@@ -1,10 +1,3 @@
-
-* {
-  padding: 0 !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
-}
-
 /* Pagination */
 
 .pagination-ls {
@@ -74,25 +67,28 @@
 /* Slide Content */
 
 .slider {
-  width: 100%;
+  /* width: 100%; */
   height: 30em;
   position: relative;
   z-index: 0;
   overflow: hidden;
+  /* display: flex; */
+  margin: 0px;
+  padding: 0px;
 }
 
 .slider-content {
   position: relative;
   display: flex;
-  width: 400%;
   height: inherit;
-  float: left;
+  /* float: left; */
   transition: all 700ms ease 0s;
 }
 
 .content-item {
   width: 25%;
   float: left;
+  background-color: red;
 }
 
 .content-item img {
@@ -105,9 +101,9 @@
 
 
 /* Content */
-.test {
+/* .test {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-}
+} */

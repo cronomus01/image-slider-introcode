@@ -11,6 +11,9 @@ export default defineConfig({
       name: 'image-slider',
       fileName: 'image-slider',
     },
+    rollupOptions: {
+      external: new RegExp('/src/test/.*')
+    }
   },
   plugins: [dts()],
   resolve: {
