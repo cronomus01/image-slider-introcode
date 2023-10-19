@@ -1,6 +1,6 @@
 {
-  "name": "image-slider-introcode",
-  "version": "0.1.0",
+  "name": "introcode-slider",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
