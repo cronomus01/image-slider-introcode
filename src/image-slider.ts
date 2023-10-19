@@ -167,22 +167,32 @@ export default class ImageSlider<T> extends LinkedList<T> {
                         if(this.sliderWith == sliderContentEl.offsetWidth) {
                             this.sliderWith = 0;
                         }
+
+                        if(this.sliderWith > sliderContentEl.offsetWidth) {
+                            this.sliderWith = 0;
+                        }
                         
                      
                     }
 
                     
                     if(direction.traverse == "left") {
-                        this.sliderWith -= sliderContent.offsetWidth;
-
-                        if(this.sliderWith < 0) {
+                        if(this.sliderWith <= 0) {
                             this.sliderWith = sliderContentEl.offsetWidth - sliderContent.offsetWidth;
+
+                            console.log(this.sliderWith)
+
+                        } else {
+
+                            this.sliderWith -= sliderContent.offsetWidth;
                         }
+
                     }
+
+                    console.log(`${this.sliderWith} ${sliderContentEl.offsetWidth}`);
 
                     sliderContentEl.setAttribute('style', `width: ${sliderContentChildrens.length * 100}%;transition: all 700ms ease 0s; transform: translate3d(-${this.sliderWith}px, 0, 0`)
 
-                    console.log(`${this.sliderWith} ${sliderContentEl.offsetWidth}`);
                     
 
                 } else {
