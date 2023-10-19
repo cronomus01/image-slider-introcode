@@ -1,8 +1,6 @@
 import LinkedList, { NodeItem } from "./handler/linked-list";
 
 type Direction = {
-    turn: 'turn-right' | 'turn-left',
-    set: 'set-right' | 'set-left',
     traverse: 'right' | 'left'
 }
 
@@ -12,6 +10,7 @@ export default class ImageSlider<T> extends LinkedList<T> {
     private node: NodeItem<T> | null;
     private nextDirection: Direction;
     private previousDirection: Direction;
+    private sliderWith: number;
 
     constructor(container: HTMLElement) {
         super();
@@ -19,15 +18,13 @@ export default class ImageSlider<T> extends LinkedList<T> {
         this.node = null;
 
         this.nextDirection = {
-            turn: 'turn-right',
-            set: 'set-right',
             traverse: 'right',
         }
         this.previousDirection = {
-            turn: 'turn-left',
-            set: 'set-left',
             traverse: 'left',
         }
+
+        this.sliderWith = 0;
     }
 
     public async load(): Promise<void> {
@@ -66,23 +63,18 @@ export default class ImageSlider<T> extends LinkedList<T> {
         }
 
         app.innerHTML = `
-            <div class="slider-cloud"></div>
-            <ul class="list-ul">
-                <img class="image" data-id="${this.node?.id}" src="${this.node?.value}" />
-            </ul>
+            <div class="slider-content">
+                ${this.content()}
+            </div>
             <ul class="pagination-ls">
                 ${this.pagination()}
             </ul>
             <button class="previous">
-                <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256.02 298.93">
-                <path class="cls-1" d="m222.5,100.5c-7-1-28-25-28-25,0,0,40-4,12-34L63,150H0L207,0l48.5,53.5c1,4-26,48-33,47Z"/>
-                <path class="cls-1" d="m207.77,298.93L0,150l63-.33,144.06,107.76c27.84-30.14-12.18-33.94-12.18-33.94,0,0,20.88-24.11,27.87-25.14s34.22,42.82,33.24,46.83"/>
+                <img src="https://img.icons8.com/ios-glyphs/90/FFFFFF/chevron-left.png" alt="chevron-left"/>
             </svg>
             </button>
             <button class="next">
-                <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256.02 298.93">
-                <path class="cls-1" d="m222.5,100.5c-7-1-28-25-28-25,0,0,40-4,12-34L63,150H0L207,0l48.5,53.5c1,4-26,48-33,47Z"/>
-                <path class="cls-1" d="m207.77,298.93L0,150l63-.33,144.06,107.76c27.84-30.14-12.18-33.94-12.18-33.94,0,0,20.88-24.11,27.87-25.14s34.22,42.82,33.24,46.83"/>
+                <img src="https://img.icons8.com/ios-glyphs/90/FFFFFF/chevron-right.png" alt="chevron-right"/>
             </svg>
             </button>
         `
@@ -129,101 +121,81 @@ export default class ImageSlider<T> extends LinkedList<T> {
             throw new Error('Error no #slider element');
         }
 
-        const ulListEl = app.querySelector('.list-ul')!;        
-        const ulChildrens = ulListEl.children;
+        const sliderContentEl = app.querySelector('.slider-content')!;        
+        const sliderContentChildrens = sliderContentEl.children;
 
         const paginationEl = app.querySelector('.pagination-ls')!;
         const paginateChildrens = paginationEl.children;
 
-        if(ulChildrens.length < 2)
-        {
-            if(last === null) {
-                this.node = revert;
-            } else {
-                this.node = last;
-            }
-    
-            for(let i = 0; i < paginateChildrens.length; i++)
-            {
-                const child = paginateChildrens[i];
-
-                if(child instanceof HTMLLIElement) {
-
-                    const nodeId = this.node?.id.toString();
-                    const listId = child.dataset.value;
-
-                    if(listId === nodeId)
-                    {
-                        child?.classList.add('active');
-                
-                    } else {
-                        child?.classList.remove('active');
-                    }
-                }
-
-            }
-       
-            const image = this.generateImage(direction);
-
-            if(direction.traverse == 'right') ulListEl.append(image);
-            if(direction.traverse == 'left') ulListEl.prepend(image);
-
-            await this.animation(image, direction);
-            await this.removeSibling(image, ulListEl, direction);
+        if(last === null) {
+            this.node = revert;
+        } else {
+            this.node = last;
         }
+
+        for(let i = 0; i < paginateChildrens.length; i++)
+        {
+            const child = paginateChildrens[i];
+            const sliderContent = sliderContentChildrens[i];
+
+            if( child instanceof HTMLLIElement && 
+                sliderContent instanceof HTMLDivElement && 
+                sliderContentEl instanceof HTMLDivElement
+            ) {
+
+                let nodeId = this.node?.id.toString();
+                let paginationItem = child.dataset.value;
+                let sliderContentItem = sliderContent.dataset.value;
+
+                if(paginationItem == nodeId && sliderContentItem == nodeId)
+                {
+                    child?.classList.add('active');
+                    sliderContent?.classList.add('active');
+
+                    if(direction.traverse == "right") {
+                        this.sliderWith += sliderContent.offsetWidth;
+                        
+                        if(this.sliderWith > sliderContentEl.offsetWidth - this.sliderWith + 1) {
+                            this.sliderWith = 0;
+                        }
+                    }
+
+                    if(direction.traverse == "left") {
+                        this.sliderWith -= sliderContent.offsetWidth
+
+                        if(this.sliderWith < 0) {
+                            this.sliderWith = sliderContentEl.offsetWidth - sliderContent.offsetWidth - Math.abs(this.sliderWith);
+                        }
+                    }
+
+                    sliderContentEl.setAttribute('style', `transform: translate3d(-${this.sliderWith - 2}px, 0, 0`)
+
+
+                    console.log(this.sliderWith);
+                    console.log(sliderContentEl.offsetWidth);
+
+                } else {
+                    child?.classList.remove('active');
+                    sliderContent?.classList.remove('active');
+                }
+            }
+
+        }
+    
     }
 
 
-    public generateImage(direction: Direction): HTMLImageElement {
+    public generateHTML(): HTMLDivElement {
 
-        const imgEl = document.createElement('img');
+        const divEl = document.createElement('div');
         
         if(this.node) {
-
-            const nodeValue = this.node?.value;
             const nodeId = this.node.id;
-            
-            imgEl.setAttribute('src', `${nodeValue}`);
-            imgEl.setAttribute('data-id', `${nodeId}`);
-            imgEl.classList.add(direction.set);
-    
+            divEl.setAttribute('data-id', `${nodeId}`);
+            divEl.innerHTML += this.node.value;
         }
 
-        return imgEl;
-    }
-
-    public async animation(image: HTMLImageElement, direction: Direction) {
-        setTimeout(() => {
-            image.classList.add(direction.turn);
-
-            if(direction.traverse == 'right') {
-                image.previousElementSibling?.classList.add('traverse-left');
-            }
-
-            if(direction.traverse == 'left') {
-                image.nextElementSibling?.classList.add('traverse-right');
-            }
-        }, 100)
-    }
-
-    public async removeSibling(image: HTMLImageElement, parent: Element, direction: Direction) {
-        setTimeout(() => {
-            image.classList.remove(direction.turn);
-            image.classList.add('image');
-            image.classList.remove(direction.set);
-
-            if(direction.traverse == 'right') {
-                parent.removeChild(image.previousElementSibling!);
-            }
-
-            if(direction.traverse == 'left') {
-                parent.removeChild(image.nextElementSibling!);
-            }
-        }, 600)
-    }
-
-    public previous() {
-        console.log('previous');
+        return divEl;
     }
 
     public pagination(): string {
@@ -232,11 +204,27 @@ export default class ImageSlider<T> extends LinkedList<T> {
         
         while(node) {
           let active = this.head?.id === node?.id ? 'pagination-ls-item active' : 'pagination-ls-item';
-          list += `<li class="${active}" data-value="${node?.id}"><span></span></li>`;
+          list += `<li class="${active}" data-value="${node.id}"><span></span></li>`;
           node = node.next;
         }
       
         return list;
+    }
+
+    public content(): string {
+        let node = this.head;
+        let content = ``;
+        
+        while(node) {
+          let active = this.head?.id === node?.id ? 'content-item active' : 'content-item';
+          content += `<div class="content-slide ${active}" data-value="${node.id}">${node?.value}</div>`;
+          node = node.next;
+        }
+
+        console.log(node);
+      
+        return content;
+        
     }
 
 }
